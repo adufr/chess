@@ -30,12 +30,12 @@ export default {
     }
   },
   mounted () {
-    this.$options.interval = setInterval(() => {
+    this.$options.intervalMoveHistory = setInterval(() => {
       this.history = window.chess.history()
     }, 100)
   },
   beforeDestroy () {
-    clearInterval(this.$options.interval)
+    clearInterval(this.$options.intervalMoveHistory)
   },
   methods: {
     isOdd (number) {

@@ -1,14 +1,12 @@
 <template>
-  <!-- TODO: border -->
-  <div class="fixed h-screen w-64 bg-nord-snow-3 dark:bg-nord-night-0 border-r border-gray-300 dark:border-gray-800">
+  <div class="fixed h-screen w-64 bg-nord-snow-3 dark:bg-nord-night-0">
     <div class="h-full flex flex-col items-center justify-between overflow-y-auto hide-scrollbar">
       <div class="w-full px-5">
         <!----------------------------->
         <!-- top ---------------------->
         <!----------------------------->
 
-        <!-- TODO: border -->
-        <div class="h-16 flex justify-between lg:justify-center items-center border-b border-gray-300 dark:border-gray-800">
+        <div class="h-16 flex justify-between lg:justify-center items-center border-b border-nord-snow-1 dark:border-nord-night-2">
           <div class="flex space-x-4 text-3xl font-extrabold text-nord-frost-2">
             <font-awesome-icon icon="chess" />
             <p>CHESS</p>
