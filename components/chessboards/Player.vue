@@ -6,10 +6,10 @@
       </div>
 
       <div>
-        <p class="text-sm font-medium text-gray-500 dark:text-gray-200">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-200 truncate">
           {{ name }}
         </p>
-        <div :class="color === 'white' ? 'text-black': 'text-white'">
+        <div class="-mt-px" :class="color === 'white' ? 'text-nord-night-4 dark:text-black': 'text-nord-snow-1 dark:text-white'">
           <font-awesome-icon
             v-for="(piece, index) in captures"
             :key="index"
