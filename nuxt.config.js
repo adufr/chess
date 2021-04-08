@@ -30,7 +30,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     { src: '~/plugins/global-mixins.js' },
-    { src: '~/plugins/base-success-modal.js' }
+    { src: '~/plugins/window-game-over.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -83,8 +83,8 @@ export default {
   fontawesome: {
     icons: {
       solid: ['faBars', 'faMoon', 'faHome', 'faUser', 'faUsers',
-        'faPuzzlePiece', 'faChess', 'faChessQueen', 'faChessBoard',
-        'faCheck'],
+        'faPuzzlePiece', 'faCheck', 'faChess', 'faChessBoard', 'faChessKing',
+        'faChessQueen', 'faChessRook', 'faChessBishop', 'faChessKnight', 'faChessPawn'],
       brands: ['faGithub']
     }
   },

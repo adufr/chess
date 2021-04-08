@@ -1,5 +1,7 @@
 <template>
-  <div id="chessboard-container" />
+  <div id="chessboard-container" class="flex items-center justify-center">
+    <window-game-over />
+  </div>
 </template>
 
 <script>
@@ -44,17 +46,10 @@ export default {
       if (window.chess.game_over()) {
         this.$sounds.gameEnd.play()
 
-        this.$success({
-          title: 'Congrats!',
-          message: 'You won by checkmate',
-          buttons: {
-            cancel: 'Close'
-          },
-          callback: (confirm) => {
-            if (!confirm) { return }
-
-            alert('restart game')
-          }
+        // TODO: passer props joueurs / color / type de game_over etc
+        this.$game_over({
+          title: 'You won!',
+          subtitle: 'by checkmate'
         })
       }
     },
@@ -92,7 +87,6 @@ export default {
       if (possibleMoves.length === 0) { return true }
 
       setTimeout(() => {
-        // TODO: replace random move by best move
         const randomIndex = Math.floor(Math.random() * possibleMoves.length)
         move = possibleMoves[randomIndex]
         moveResult = window.chess.move({ from: move.from, to: move.to, promotion: 'q' })
