@@ -20,19 +20,24 @@ export default {
     // -- INITIALIZE CHESS GAME AND CHESS BOARD
     // ----------------------------------------------------
 
+    const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
     // chess game
-    window.chess = new Chess()
+    window.chess = new Chess(fen)
 
     // chess board
     window.board = new Chessboard(document.getElementById('chessboard-container'), {
-      position: 'start',
+      position: fen,
       responsive: true,
       style: {
         cssClass: 'default',
         showCoordinates: true,
         borderType: BORDER_TYPE.frame
       },
-      sprite: { url: 'https://raw.githubusercontent.com/shaack/cm-chessboard/master/assets/images/chessboard-sprite-staunty.svg' }
+      sprite: {
+        url: require('@/assets/images/svg/chessboard-sprite-staunty.svg'),
+        cache: true // cache the sprite inline, in the HTML
+      }
     })
 
     // ----------------------------------------------------
@@ -42,18 +47,6 @@ export default {
     window.board.enableMoveInput(this.inputHandler, COLOR.white)
   },
   methods: {
-    checkForGameOver () {
-      if (window.chess.game_over()) {
-        this.$sounds.gameEnd.play()
-
-        // TODO: passer props joueurs / color / type de game_over etc
-        this.$game_over({
-          title: 'You won!',
-          subtitle: 'by checkmate'
-        })
-      }
-    },
-
     /**
      * Handle all movement logic
      */
@@ -76,7 +69,7 @@ export default {
 
       window.board.disableMoveInput()
       window.board.setPosition(window.chess.fen())
-      this.checkForGameOver()
+      this.checkForGameOver(true)
 
       // --------------------------------------------------------------
       // bot move
@@ -84,7 +77,7 @@ export default {
 
       // get all possibleMoves
       const possibleMoves = window.chess.moves({ verbose: true })
-      if (possibleMoves.length === 0) { return true }
+      if (possibleMoves.length === 0 || window.chess.game_over()) { return true }
 
       setTimeout(() => {
         const randomIndex = Math.floor(Math.random() * possibleMoves.length)
@@ -95,7 +88,7 @@ export default {
 
         window.board.enableMoveInput(this.inputHandler, COLOR.white)
         window.board.setPosition(window.chess.fen())
-        this.checkForGameOver()
+        this.checkForGameOver(false)
       }, 1000)
 
       return true

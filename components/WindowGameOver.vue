@@ -1,53 +1,82 @@
 <template>
-  <div
-    v-if="show"
-    id="windowGameOver"
-    ref="windowGameOverRef"
-    class="absolute bg-white rounded-md shadow-2xl"
-    @close="show = false"
-  >
-    <div class="p-5 text-center bg-nord-green rounded-t-md">
-      <p class="text-3xl font-extrabold text-white">
-        {{ dialog.title }}
-      </p>
-      <small class="text-medium text-white">
-        {{ dialog.subtitle }}
-      </small>
-    </div>
+  <transition name="fade">
+    <div
+      v-if="show"
+      id="windowGameOver"
+      ref="windowGameOverRef"
+      class="absolute bg-white rounded-md shadow-2xl"
+      @close="show = false"
+    >
+      <div
+        class="p-5 text-center  rounded-t-md"
+        :class="{
+          'bg-nord-green': options.type === 'victory',
+          'bg-nord-red': options.type === 'defeat',
+          'bg-gray-400': options.type === 'draw',
+        }"
+      >
+        <p class="text-3xl font-extrabold text-white">
+          {{ options.title }}
+        </p>
+        <small class="text-medium text-white">
+          {{ options.subtitle }}
+        </small>
+      </div>
 
-    <div class="p-5 flex flex-row items-center space-x-2">
-      <div class="w-20 flex flex-col items-center text-center">
-        <div class="h-16 w-16 border-4 border-nord-green rounded-md p-1">
-          <img src="@/assets/images/svg/white-pawn.svg" alt="Player icon">
+      <div class="p-5 flex flex-row items-center space-x-2">
+        <div class="w-20 flex flex-col items-center text-center">
+          <div
+            class="h-16 w-16 border-4 rounded-md p-1"
+            :class="{
+              'border-nord-green': options.type === 'victory',
+              'border-nord-snow-1': options.type === 'draw',
+            }"
+          >
+            <img src="@/assets/images/svg/white-pawn.svg" alt="Player icon">
+          </div>
+          <span class="w-20 text-sm truncate text-gray-400">{{ options.whiteName }}</span>
         </div>
-        <span class="w-20 text-sm truncate text-gray-400">Player</span>
-      </div>
 
-      <div class="-mt-4 font-medium text-gray-500">
-        1 - 0
-      </div>
-
-      <div class="w-20 flex flex-col items-center text-center">
-        <div class="h-16 w-16 border-4 border-nord-snow-1 rounded-md p-2">
-          <img src="@/assets/images/svg/computer.svg" alt="Computer icon">
+        <div class="-mt-4 font-medium text-gray-500">
+          {{
+            options.type === 'victory'
+              ? '1 - 0'
+              : options.type === 'draw'
+                ? '0.5 - 0.5'
+                : '0 - 1'
+          }}
         </div>
-        <span class="w-20 text-sm truncate text-gray-400">Computer</span>
+
+        <div class="w-20 flex flex-col items-center text-center">
+          <div
+            class="h-16 w-16 border-4 rounded-md p-2"
+            :class="{
+              'border-nord-green': options.type === 'defeat',
+              'border-nord-snow-1': options.type === 'victory',
+            }"
+          >
+            <img src="@/assets/images/svg/computer.svg" alt="Computer icon">
+          </div>
+          <span class="w-20 text-sm truncate text-gray-400">{{ options.blackName }}</span>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
 import { windowGameOverEvents } from './windowGameOverEvents'
 
-// TODO: handle player names / icons
 export default {
   data () {
     return {
       show: false,
-      dialog: {
+      options: {
+        type: '',
         title: '',
-        subtitle: ''
+        subtitle: '',
+        whiteName: '',
+        blackName: ''
       }
     }
   },
@@ -60,9 +89,12 @@ export default {
   },
   methods: {
     resetState () {
-      this.dialog = {
+      this.options = {
+        type: '',
         title: '',
-        subtitle: ''
+        subtitle: '',
+        whiteName: '',
+        blackName: ''
       }
     },
     handleClickButton ({ target }, confirm) {
@@ -87,10 +119,10 @@ export default {
       this.params = params
       this.show = true
 
-      // set params to dialog state
+      // set params to options state
       Object.entries(params).forEach((param) => {
-        if (typeof param[1] === typeof this.dialog[param[0]]) {
-          this.dialog[param[0]] = param[1]
+        if (typeof param[1] === typeof this.options[param[0]]) {
+          this.options[param[0]] = param[1]
         }
       })
     }

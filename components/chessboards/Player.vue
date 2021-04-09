@@ -9,11 +9,17 @@
         <p class="text-sm font-medium text-gray-500 dark:text-gray-200 truncate">
           {{ name }}
         </p>
-        <div class="-mt-px" :class="color === 'white' ? 'text-nord-night-4 dark:text-black': 'text-nord-snow-1 dark:text-white'">
+        <div
+          class="-mt-px"
+          :class="color === 'white'
+            ? 'text-nord-night-4 dark:text-nord-night-0'
+            : 'text-nord-snow-1 dark:text-white'"
+        >
           <font-awesome-icon
             v-for="(piece, index) in captures"
             :key="index"
             :icon="`chess-${piece}`"
+            class="mx-px"
           />
         </div>
       </div>

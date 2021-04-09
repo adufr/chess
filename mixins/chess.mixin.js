@@ -1,5 +1,37 @@
 export default {
   methods: {
+    checkForGameOver (isWhite) {
+      if (window.chess.game_over()) {
+        this.$sounds.gameEnd.play()
+        let title, subtitle, type
+
+        if (window.chess.in_checkmate()) {
+          type = isWhite ? 'victory' : 'defeat'
+          title = isWhite ? 'You won!' : 'You lost!'
+          subtitle = 'by checkmate'
+        } else if (window.chess.in_stalemate()) {
+          type = 'draw'
+          title = 'It\'s a draw!'
+          subtitle = 'by stalemate'
+        } else if (window.chess.in_threefold_repetition()) {
+          type = 'draw'
+          title = 'It\'s a draw!'
+          subtitle = 'by repetition'
+        } else if (window.chess.insufficient_material()) {
+          type = 'draw'
+          title = 'It\'s a draw!'
+          subtitle = 'by insufficient material'
+        }
+
+        this.$game_over({
+          type,
+          title,
+          subtitle,
+          whiteName: 'Player',
+          blackName: 'Computer'
+        })
+      }
+    },
     playSound ({ sound, moveResult, self }) {
       // play a specifid sound
       if (sound) {
