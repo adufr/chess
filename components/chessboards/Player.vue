@@ -42,30 +42,10 @@ export default {
     imgPath: {
       type: String,
       default: '@/assets/images/svg/white-pawn.svg'
-    }
-  },
-  data () {
-    return {
-      captures: []
-    }
-  },
-  mounted () {
-    this.$options.intervalCaptures = setInterval(() => {
-      this.computeCaptures()
-    }, 100)
-  },
-  beforeDestroy () {
-    clearInterval(this.$options.intervalCaptures)
-  },
-  methods: {
-    computeCaptures () {
-      if (this.color === 'white') {
-        this.captures = this.getWhiteCaptures()
-      }
-
-      if (this.color === 'black') {
-        this.captures = this.getBlackCaptures()
-      }
+    },
+    captures: {
+      type: Array,
+      default: () => []
     }
   }
 }
