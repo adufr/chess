@@ -9,6 +9,7 @@
         :name="black.name"
         img-path="computer.svg"
         :captures="black.captures"
+        :advantage="getMaterialDifference('black')"
       />
 
       <div :id="`chessboard-${uid}`" class="flex items-center justify-center">
@@ -20,6 +21,7 @@
         :name="white.name"
         img-path="white-pawn.svg"
         :captures="white.captures"
+        :advantage="getMaterialDifference('white')"
       />
     </div>
 
@@ -68,7 +70,8 @@ export default {
       black: {
         name: this.blackName,
         captures: []
-      }
+      },
+      materialCount: 0
     }
   },
   mounted () {
@@ -120,6 +123,7 @@ export default {
     updateCaptures () {
       this.white.captures = this.getWhiteCaptures()
       this.black.captures = this.getBlackCaptures()
+      this.materialCount = this.getMaterialCount()
     },
     getBlackCaptures () {
       const array = []
@@ -162,6 +166,40 @@ export default {
       if (queen === 0) { array.push('queen') }
 
       return array
+    },
+    getMaterialCount () {
+      let whiteTotal = 0
+      let blackTotal = 0
+      this.white.captures.forEach((capture) => {
+        switch (capture) {
+          case 'pawn': whiteTotal += 1; break
+          case 'knight': whiteTotal += 3; break
+          case 'bishop': whiteTotal += 3; break
+          case 'rook': whiteTotal += 5; break
+          case 'queen': whiteTotal += 9; break
+        }
+      })
+
+      this.black.captures.forEach((capture) => {
+        switch (capture) {
+          case 'pawn': blackTotal += 1; break
+          case 'knight': blackTotal += 3; break
+          case 'bishop': blackTotal += 3; break
+          case 'rook': blackTotal += 5; break
+          case 'queen': blackTotal += 9; break
+        }
+      })
+
+      return whiteTotal - blackTotal
+    },
+    getMaterialDifference (color) {
+      return (color === 'white')
+        ? this.materialCount > 0
+          ? Math.abs(this.materialCount)
+          : 0
+        : this.materialCount < 0
+          ? Math.abs(this.materialCount)
+          : 0
     },
     // ----------------------------------------
     // -- generic methods ---------------------
