@@ -132,5 +132,8 @@ See also: https://github.com/ornicar/lila/blob/master/COPYING.md
         <g id="markerSquare">
             <rect x="0" y="0" width="40" height="40"/>
         </g>
+        <g id="markerSmallCircle" transform="translate(2.000000, 2.000000)" fill="#000000" fill-opacity="0">
+            <circle cx="18" cy="18" r="3" fill="#000000"/>
+        </g>
     </g>
 </svg>

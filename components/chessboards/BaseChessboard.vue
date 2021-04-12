@@ -88,8 +88,25 @@ export default {
   },
   methods: {
     inputHandler (event) {
+      this.board.removeMarkers()
+
+      // @ move start
+      if (event.type === INPUT_EVENT_TYPE.moveStart) {
+        this.drawPossibleMoves(event.square)
+        return true
+      }
+
+      // @ move done
       if (event.type !== INPUT_EVENT_TYPE.moveDone) { return true }
       this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
+    },
+    drawPossibleMoves (square) {
+      const moves = this.game.moves({ square, verbose: true })
+      moves.forEach((move) => {
+        (move.captured)
+          ? this.board.addMarker(move.to, { class: 'legal-capture', slice: 'markerCircle' })
+          : this.board.addMarker(move.to, { class: 'legal-move', slice: 'markerSmallCircle' })
+      })
     },
     playMove (move) {
       const moveResult = this.game.move(move)
@@ -276,3 +293,19 @@ export default {
   }
 }
 </script>
+
+<style>
+/* custom "legal move" marker */
+.cm-chessboard .markers .marker.legal-move {
+  stroke: black;
+  stroke-width: 6px;
+  opacity: 0.1;
+}
+
+/* custom "legal capture" marker */
+.cm-chessboard .markers .marker.legal-capture {
+  stroke: black;
+  stroke-width: 3px;
+  opacity: 0.1;
+}
+</style>
