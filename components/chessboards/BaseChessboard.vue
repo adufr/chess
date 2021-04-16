@@ -1,14 +1,21 @@
 <template>
-  <div class="flex flex-wrap justify-center">
+  <div class="flex flex-wrap justify-center h-full">
     <!------------------------------------>
     <!-- chessboard ---------------------->
     <!------------------------------------>
-    <div class="p-2 lg:p-5 rounded-md" :style="'width: calc(100vh - 96px)'">
+    <div
+      class="p-2 lg:p-5 rounded-md"
+      :class="chessboardClasses"
+      :style="hasHeader
+        ? 'width: calc(100vh - 144px)'
+        : 'width: calc(100vh - 96px)'"
+    >
       <player
         color="black"
-        :name="black.name"
+        :name="blackName"
         img-path="computer.svg"
         :captures="black.captures"
+        :advantage="getMaterialDifference('black')"
       />
 
       <div :id="`chessboard-${uid}`" class="flex items-center justify-center">
@@ -17,16 +24,17 @@
 
       <player
         color="white"
-        :name="white.name"
+        :name="whiteName"
         img-path="white-pawn.svg"
         :captures="white.captures"
+        :advantage="getMaterialDifference('white')"
       />
     </div>
 
     <!------------------------------------>
     <!-- right side ---------------------->
     <!------------------------------------>
-    <div class="flex-grow h-full w-80 p-2 pt-0 lg:p-5 lg:pl-0 ">
+    <div class="flex-grow h-auto w-80 p-2 lg:pt-5 lg:p-5 xl:pl-0">
       <slot name="right" />
     </div>
   </div>
@@ -39,6 +47,14 @@ import 'cm-chessboard/styles/cm-chessboard.css'
 
 export default {
   props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    chessboardClasses: {
+      type: [String, Object, Array],
+      default: ''
+    },
     fen: {
       type: String,
       default: FEN_START_POSITION
@@ -62,13 +78,18 @@ export default {
       game: null,
       board: null,
       white: {
-        name: this.whiteName,
         captures: []
       },
       black: {
-        name: this.blackName,
         captures: []
-      }
+      },
+      materialCount: 0,
+      windowWidth: window.innerWidth
+    }
+  },
+  computed: {
+    hasHeader () {
+      return this.windowWidth <= 1026
     }
   },
   mounted () {
@@ -82,11 +103,34 @@ export default {
     })
 
     this.changeTurn()
+
+    window.addEventListener('resize', (e) => {
+      this.windowWidth = window.innerWidth
+    })
   },
   methods: {
     inputHandler (event) {
+      if (this.disabled) { return false }
+
+      this.board.removeMarkers()
+
+      // @ move start
+      if (event.type === INPUT_EVENT_TYPE.moveStart) {
+        this.drawPossibleMoves(event.square)
+        return true
+      }
+
+      // @ move done
       if (event.type !== INPUT_EVENT_TYPE.moveDone) { return true }
       this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
+    },
+    drawPossibleMoves (square) {
+      const moves = this.game.moves({ square, verbose: true })
+      moves.forEach((move) => {
+        (move.captured)
+          ? this.board.addMarker(move.to, { class: 'legal-capture', slice: 'markerCircle' })
+          : this.board.addMarker(move.to, { class: 'legal-move', slice: 'markerSmallCircle' })
+      })
     },
     playMove (move) {
       const moveResult = this.game.move(move)
@@ -107,7 +151,9 @@ export default {
         this.board.setPosition(this.game.fen())
         this.checkForGameOver(true)
         this.updateCaptures()
-        this.afterMove()
+        setTimeout(() => {
+          this.afterMove()
+        }, 500)
       }, 10)
     },
     afterMove () {
@@ -120,6 +166,7 @@ export default {
     updateCaptures () {
       this.white.captures = this.getWhiteCaptures()
       this.black.captures = this.getBlackCaptures()
+      this.materialCount = this.getMaterialCount()
     },
     getBlackCaptures () {
       const array = []
@@ -163,6 +210,40 @@ export default {
 
       return array
     },
+    getMaterialCount () {
+      let whiteTotal = 0
+      let blackTotal = 0
+      this.white.captures.forEach((capture) => {
+        switch (capture) {
+          case 'pawn': whiteTotal += 1; break
+          case 'knight': whiteTotal += 3; break
+          case 'bishop': whiteTotal += 3; break
+          case 'rook': whiteTotal += 5; break
+          case 'queen': whiteTotal += 9; break
+        }
+      })
+
+      this.black.captures.forEach((capture) => {
+        switch (capture) {
+          case 'pawn': blackTotal += 1; break
+          case 'knight': blackTotal += 3; break
+          case 'bishop': blackTotal += 3; break
+          case 'rook': blackTotal += 5; break
+          case 'queen': blackTotal += 9; break
+        }
+      })
+
+      return whiteTotal - blackTotal
+    },
+    getMaterialDifference (color) {
+      return (color === 'white')
+        ? this.materialCount > 0
+          ? Math.abs(this.materialCount)
+          : 0
+        : this.materialCount < 0
+          ? Math.abs(this.materialCount)
+          : 0
+    },
     // ----------------------------------------
     // -- generic methods ---------------------
     // ----------------------------------------
@@ -172,16 +253,18 @@ export default {
         ? this.board.enableMoveInput(this.inputHandler)
         : this.board.enableMoveInput(this.inputHandler, this.game.turn())
     },
-    checkForGameOver (isWhite) {
+    checkForGameOver () {
       if (this.free) { return }
+
+      const turn = this.game.turn()
 
       if (this.game.game_over()) {
         this.$sounds.gameEnd.play()
         let title, subtitle, type
 
         if (this.game.in_checkmate()) {
-          type = isWhite ? 'victory' : 'defeat'
-          title = isWhite ? 'You won!' : 'You lost!'
+          type = turn === 'b' ? 'victory' : 'defeat'
+          title = turn === 'b' ? 'You won!' : 'You lost!'
           subtitle = 'by checkmate'
         } else if (this.game.in_stalemate()) {
           type = 'draw'
@@ -238,3 +321,19 @@ export default {
   }
 }
 </script>
+
+<style>
+/* custom "legal move" marker */
+.cm-chessboard .markers .marker.legal-move {
+  stroke: black;
+  stroke-width: 6px;
+  opacity: 0.1;
+}
+
+/* custom "legal capture" marker */
+.cm-chessboard .markers .marker.legal-capture {
+  stroke: black;
+  stroke-width: 3px;
+  opacity: 0.1;
+}
+</style>

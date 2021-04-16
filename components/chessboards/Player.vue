@@ -21,6 +21,10 @@
             :icon="`chess-${piece}`"
             class="mx-px"
           />
+
+          <span v-show="advantage" class="text-gray-400 text-sm">
+            +{{ advantage }}
+          </span>
         </div>
       </div>
     </div>
@@ -46,6 +50,10 @@ export default {
     captures: {
       type: Array,
       default: () => []
+    },
+    advantage: {
+      type: Number,
+      default: 0
     }
   }
 }
