@@ -1,12 +1,18 @@
 <template>
-  <div class="flex flex-wrap justify-center">
+  <div class="flex flex-wrap justify-center h-full">
     <!------------------------------------>
     <!-- chessboard ---------------------->
     <!------------------------------------>
-    <div class="p-2 lg:p-5 rounded-md" :style="'width: calc(100vh - 96px)'">
+    <div
+      class="p-2 lg:p-5 rounded-md"
+      :class="chessboardClasses"
+      :style="hasHeader
+        ? 'width: calc(100vh - 144px)'
+        : 'width: calc(100vh - 96px)'"
+    >
       <player
         color="black"
-        :name="black.name"
+        :name="blackName"
         img-path="computer.svg"
         :captures="black.captures"
         :advantage="getMaterialDifference('black')"
@@ -18,7 +24,7 @@
 
       <player
         color="white"
-        :name="white.name"
+        :name="whiteName"
         img-path="white-pawn.svg"
         :captures="white.captures"
         :advantage="getMaterialDifference('white')"
@@ -28,7 +34,7 @@
     <!------------------------------------>
     <!-- right side ---------------------->
     <!------------------------------------>
-    <div class="flex-grow h-full w-80 p-2 pt-0 lg:p-5 lg:pl-0 ">
+    <div class="flex-grow h-auto w-80 p-2 lg:pt-5 lg:p-5 xl:pl-0">
       <slot name="right" />
     </div>
   </div>
@@ -41,6 +47,14 @@ import 'cm-chessboard/styles/cm-chessboard.css'
 
 export default {
   props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    chessboardClasses: {
+      type: [String, Object, Array],
+      default: ''
+    },
     fen: {
       type: String,
       default: FEN_START_POSITION
@@ -64,14 +78,18 @@ export default {
       game: null,
       board: null,
       white: {
-        name: this.whiteName,
         captures: []
       },
       black: {
-        name: this.blackName,
         captures: []
       },
-      materialCount: 0
+      materialCount: 0,
+      windowWidth: window.innerWidth
+    }
+  },
+  computed: {
+    hasHeader () {
+      return this.windowWidth <= 1026
     }
   },
   mounted () {
@@ -85,9 +103,15 @@ export default {
     })
 
     this.changeTurn()
+
+    window.addEventListener('resize', (e) => {
+      this.windowWidth = window.innerWidth
+    })
   },
   methods: {
     inputHandler (event) {
+      if (this.disabled) { return false }
+
       this.board.removeMarkers()
 
       // @ move start
@@ -127,7 +151,9 @@ export default {
         this.board.setPosition(this.game.fen())
         this.checkForGameOver(true)
         this.updateCaptures()
-        this.afterMove()
+        setTimeout(() => {
+          this.afterMove()
+        }, 500)
       }, 10)
     },
     afterMove () {
@@ -227,16 +253,18 @@ export default {
         ? this.board.enableMoveInput(this.inputHandler)
         : this.board.enableMoveInput(this.inputHandler, this.game.turn())
     },
-    checkForGameOver (isWhite) {
+    checkForGameOver () {
       if (this.free) { return }
+
+      const turn = this.game.turn()
 
       if (this.game.game_over()) {
         this.$sounds.gameEnd.play()
         let title, subtitle, type
 
         if (this.game.in_checkmate()) {
-          type = isWhite ? 'victory' : 'defeat'
-          title = isWhite ? 'You won!' : 'You lost!'
+          type = turn === 'b' ? 'victory' : 'defeat'
+          title = turn === 'b' ? 'You won!' : 'You lost!'
           subtitle = 'by checkmate'
         } else if (this.game.in_stalemate()) {
           type = 'draw'
