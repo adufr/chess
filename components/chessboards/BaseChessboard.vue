@@ -5,8 +5,8 @@
     <!------------------------------------>
     <div
       class="p-2 lg:p-5 rounded-md"
-      :class="chessboardClasses"
-      :style="hasHeader
+      :class="{ 'order-2': disabled && isSmall }"
+      :style="isSmall
         ? 'width: calc(100vh - 144px)'
         : 'width: calc(100vh - 96px)'"
     >
@@ -34,7 +34,11 @@
     <!------------------------------------>
     <!-- right side ---------------------->
     <!------------------------------------>
-    <div class="flex-grow h-auto w-80 p-2 lg:pt-5 lg:p-5 xl:pl-0">
+    <div
+      class="flex-grow w-96 p-2 lg:pt-5 lg:p-5 xl:pl-0"
+      :class="{ 'order-1': disabled && isSmall }"
+      :style="(disabled && isSmall) ? 'height: calc(100vh - 48px)' : 'height: auto'"
+    >
       <slot name="right" />
     </div>
   </div>
@@ -50,10 +54,6 @@ export default {
     disabled: {
       type: Boolean,
       default: false
-    },
-    chessboardClasses: {
-      type: [String, Object, Array],
-      default: ''
     },
     fen: {
       type: String,
@@ -88,7 +88,7 @@ export default {
     }
   },
   computed: {
-    hasHeader () {
+    isSmall () {
       return this.windowWidth <= 1026
     }
   },
