@@ -4,14 +4,13 @@
     :computer="selected"
     :black-name="selectedComputer.displayName"
     :white-name="'Player (you)'"
-    :chessboard-classes="disabled ? 'hidden xl:block' : 'block'"
   >
     <template #right>
       <div class="h-full bg-nord-snow-3 dark:bg-nord-night-1 rounded-md">
         <div v-show="disabled" class="h-full flex flex-col justify-between">
           <!-- top -->
-          <div class="p-5 flex flex-col items-center justify-center space-y-8">
-            <p class="text-nord-night-4 dark:text-white text-3xl xl:text-4xl font-extrabold">
+          <div class="p-5 flex flex-col items-center justify-center space-y-4 xl:space-y-8">
+            <p class="text-nord-night-4 dark:text-white text-2xl xl:text-4xl font-extrabold">
               Play against..
             </p>
 
@@ -31,7 +30,7 @@
 
               <div class="text-center">
                 <p
-                  class="text-gray-400"
+                  class="text-sm xl:text-base text-gray-400"
                   v-html="selectedComputer.description"
                 />
               </div>
@@ -45,7 +44,7 @@
                 :class="(selected === computer.id) ? 'border-nord-frost-3' : 'border-nord-snow-3 dark:border-nord-night-1'"
                 @click="selected = computer.id"
               >
-                <div class="h-20 w-20 flex items-center justify-center bg-white p-2 rounded-md">
+                <div class="h-14 w-14 xl:h-20 xl:w-20 flex items-center justify-center bg-white p-2 rounded-md">
                   <img src="@/assets/images/svg/computer.svg" alt="Computer icon">
                   <p class="absolute text-center font-black text-gray-500">
                     {{ computer.id }}
@@ -86,7 +85,7 @@ export default {
           id: 2,
           name: 'Computer #2',
           displayName: 'Computer #1 (minimax, depth=2)',
-          description: 'This computer plays using a minimax algorithm (depth 2).<br>Loading time might be long as alpha-beta pruning hasn\'t been implemented yet'
+          description: 'This computer plays using a minimax algorithm (depth 2).'
         }
       ]
     }

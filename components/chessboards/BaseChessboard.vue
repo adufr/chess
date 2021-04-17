@@ -5,8 +5,8 @@
     <!------------------------------------>
     <div
       class="p-2 lg:p-5 rounded-md"
-      :class="chessboardClasses"
-      :style="hasHeader
+      :class="{ 'order-2': disabled && isSmall }"
+      :style="isSmall
         ? 'width: calc(100vh - 144px)'
         : 'width: calc(100vh - 96px)'"
     >
@@ -34,7 +34,11 @@
     <!------------------------------------>
     <!-- right side ---------------------->
     <!------------------------------------>
-    <div class="flex-grow h-auto w-80 p-2 lg:pt-5 lg:p-5 xl:pl-0">
+    <div
+      class="flex-grow w-96 p-2 lg:pt-5 lg:p-5 xl:pl-0"
+      :class="{ 'order-1': disabled && isSmall }"
+      :style="(disabled && isSmall) ? 'height: calc(100vh - 48px)' : 'height: auto'"
+    >
       <slot name="right" />
     </div>
   </div>
@@ -50,10 +54,6 @@ export default {
     disabled: {
       type: Boolean,
       default: false
-    },
-    chessboardClasses: {
-      type: [String, Object, Array],
-      default: ''
     },
     fen: {
       type: String,
@@ -88,7 +88,7 @@ export default {
     }
   },
   computed: {
-    hasHeader () {
+    isSmall () {
       return this.windowWidth <= 1026
     }
   },
@@ -122,7 +122,8 @@ export default {
 
       // @ move done
       if (event.type !== INPUT_EVENT_TYPE.moveDone) { return true }
-      this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
+      const result = this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
+      return result
     },
     drawPossibleMoves (square) {
       const moves = this.game.moves({ square, verbose: true })
@@ -136,7 +137,10 @@ export default {
       const moveResult = this.game.move(move)
 
       // illegal move
-      if (!this.free && !moveResult) { return this.$sounds.illegal.play() }
+      if (!this.free && !moveResult) {
+        this.$sounds.illegal.play()
+        return false
+      }
 
       // freemode illegal move
       if (this.free && !moveResult) {
@@ -146,15 +150,14 @@ export default {
         this.game.remove(move.from)
       }
 
-      setTimeout(() => { // small delay to fix animations
-        this.playSound({ move: moveResult, self: true })
-        this.board.setPosition(this.game.fen())
-        this.checkForGameOver(true)
-        this.updateCaptures()
-        setTimeout(() => {
-          this.afterMove()
-        }, 500)
-      }, 10)
+      this.playSound({ move: moveResult, self: true })
+      this.board.setPosition(this.game.fen())
+      this.checkForGameOver(true)
+      this.updateCaptures()
+      setTimeout(() => {
+        this.afterMove()
+      }, 500)
+      return true
     },
     afterMove () {
       this.changeTurn()
