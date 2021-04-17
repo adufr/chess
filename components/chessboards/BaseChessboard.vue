@@ -122,7 +122,8 @@ export default {
 
       // @ move done
       if (event.type !== INPUT_EVENT_TYPE.moveDone) { return true }
-      this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
+      const result = this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
+      return result
     },
     drawPossibleMoves (square) {
       const moves = this.game.moves({ square, verbose: true })
@@ -136,7 +137,10 @@ export default {
       const moveResult = this.game.move(move)
 
       // illegal move
-      if (!this.free && !moveResult) { return this.$sounds.illegal.play() }
+      if (!this.free && !moveResult) {
+        this.$sounds.illegal.play()
+        return false
+      }
 
       // freemode illegal move
       if (this.free && !moveResult) {
@@ -146,15 +150,14 @@ export default {
         this.game.remove(move.from)
       }
 
-      setTimeout(() => { // small delay to fix animations
-        this.playSound({ move: moveResult, self: true })
-        this.board.setPosition(this.game.fen())
-        this.checkForGameOver(true)
-        this.updateCaptures()
-        setTimeout(() => {
-          this.afterMove()
-        }, 500)
-      }, 10)
+      this.playSound({ move: moveResult, self: true })
+      this.board.setPosition(this.game.fen())
+      this.checkForGameOver(true)
+      this.updateCaptures()
+      setTimeout(() => {
+        this.afterMove()
+      }, 500)
+      return true
     },
     afterMove () {
       this.changeTurn()
