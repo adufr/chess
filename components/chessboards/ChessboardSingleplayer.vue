@@ -37,9 +37,11 @@ export default {
         // ------------------------------------
         } else {
           const move = this.minimax(this.game, 2, true, 0, 'b')[0]
-          // const move = this.minimaxWithPruning(this.game, 2, -10000, 10000, true, 0, 'b')[0]
-          this.playMove(move)
-          this.board.enableMoveInput(this.inputHandler, COLOR.white)
+
+          setTimeout(() => {
+            this.playMove(move)
+            this.board.enableMoveInput(this.inputHandler, COLOR.white)
+          }, 200)
         }
       } else {
         this.changeTurn()
