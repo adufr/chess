@@ -117,7 +117,6 @@ export default {
       // @ move start
       if (event.type === INPUT_EVENT_TYPE.moveStart) {
         this.drawPossibleMoves(event.square)
-        return true
       }
 
       // @ move done
@@ -137,10 +136,7 @@ export default {
       const moveResult = this.game.move(move)
 
       // illegal move
-      if (!this.free && !moveResult) {
-        this.$sounds.illegal.play()
-        return false
-      }
+      if (!this.free && !moveResult) { return false }
 
       // freemode illegal move
       if (this.free && !moveResult) {
@@ -299,23 +295,23 @@ export default {
       }
 
       // check sound
-      if (this.game.in_check()) {
+      if (move && move.san.includes('+')) {
         return this.$sounds.moveCheck.play()
       }
 
-      // promote sound
-      if (move && move.promotion && move.promotion.toLowerCase() === 'q') {
-        return this.$sounds.promote.play()
-      }
-
       // capture sound
-      if (move && move.captured) {
+      if (move && move.san.includes('x')) {
         return this.$sounds.capture.play()
       }
 
       // castle sound
       if (move && move.san && (move.san === 'O-O' || move.san === 'O-O-O')) {
         return this.$sounds.castle.play()
+      }
+
+      // promote sound
+      if (move && move.san.includes('=')) {
+        return this.$sounds.promote.play()
       }
 
       // otherwise, a simple move
