@@ -89,7 +89,8 @@ export default {
       isAltKeyDown: false,
       rcMarker: { class: 'emphasize', slice: 'markerSquare' },
       altRcMarker: { class: 'emphasize2', slice: 'markerSquare' },
-      ctrlRcMarker: { class: 'emphasize3', slice: 'markerSquare' }
+      ctrlRcMarker: { class: 'emphasize3', slice: 'markerSquare' },
+      lastMoveMarker: { class: 'emphasize4', slice: 'markerSquare' }
     }
   },
   computed: {
@@ -184,6 +185,7 @@ export default {
       }
 
       this.playSound({ move: moveResult, self: true })
+      this.drawLastMove(move)
       this.board.setPosition(this.game.fen())
       this.checkForGameOver(true)
       this.updateCaptures()
@@ -309,6 +311,11 @@ export default {
       this.board.removeMarkers(square, this.ctrlRcMarker)
       this.board.removeMarkers(square, this.altRcMarker)
     },
+    drawLastMove (move) {
+      this.board.removeMarkers(undefined, this.lastMoveMarker)
+      this.board.addMarker(move.from, this.lastMoveMarker)
+      this.board.addMarker(move.to, this.lastMoveMarker)
+    },
 
     // ----------------------------------------
     // -- generic methods ---------------------
@@ -419,5 +426,11 @@ export default {
 .cm-chessboard .markers .marker.emphasize3 {
   fill: #FBBF24;
   opacity: 0.8;
+}
+
+/* custom "last move" marker */
+.cm-chessboard .markers .marker.emphasize4 {
+  fill: #FDE68A;
+  opacity: 0.4;
 }
 </style>
