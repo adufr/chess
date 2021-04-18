@@ -61,12 +61,6 @@
           />
 
           <sidebar-item
-            title="Freemove"
-            icon="chess-queen"
-            to="/freemove"
-          />
-
-          <sidebar-item
             title="FEN Editor"
             icon="chess-board"
             to="/fen-editor"

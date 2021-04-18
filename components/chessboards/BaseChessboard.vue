@@ -59,10 +59,6 @@ export default {
       type: String,
       default: FEN_START_POSITION
     },
-    free: {
-      type: Boolean,
-      default: false
-    },
     whiteName: {
       type: String,
       default: ''
@@ -174,15 +170,7 @@ export default {
       const moveResult = this.game.move(move)
 
       // illegal move
-      if (!this.free && !moveResult) { return false }
-
-      // freemode illegal move
-      if (this.free && !moveResult) {
-        // TODO: fix playSound()
-        const from = this.game.get(move.from)
-        this.game.put({ type: from.type, color: from.color }, move.to)
-        this.game.remove(move.from)
-      }
+      if (!moveResult) { return false }
 
       this.playSound({ move: moveResult, self: true })
       this.drawLastMove(move)
@@ -322,13 +310,9 @@ export default {
     // ----------------------------------------
     changeTurn () {
       this.board.disableMoveInput()
-      this.free
-        ? this.board.enableMoveInput(this.inputHandler)
-        : this.board.enableMoveInput(this.inputHandler, this.game.turn())
+      this.board.enableMoveInput(this.inputHandler, this.game.turn())
     },
     checkForGameOver () {
-      if (this.free) { return }
-
       const turn = this.game.turn()
 
       if (this.game.game_over()) {
