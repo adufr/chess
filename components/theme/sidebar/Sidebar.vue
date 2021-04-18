@@ -35,9 +35,9 @@
           />
 
           <sidebar-item
-            title="Singleplayer"
-            icon="user"
-            to="/singleplayer"
+            title="Computer"
+            icon="robot"
+            to="/computer"
           />
 
           <sidebar-item

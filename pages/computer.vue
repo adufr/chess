@@ -1,5 +1,5 @@
 <template>
-  <chessboard-singleplayer
+  <chessboard-computer
     :disabled="disabled"
     :computer="selected"
     :black-name="selectedComputer.displayName"
@@ -65,7 +65,7 @@
         </div>
       </div>
     </template>
-  </chessboard-singleplayer>
+  </chessboard-computer>
 </template>
 
 <script>
