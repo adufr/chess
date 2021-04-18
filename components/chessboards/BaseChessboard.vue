@@ -46,7 +46,7 @@
 
 <script>
 import Chess from 'chess.js'
-import { Chessboard, FEN_START_POSITION, BORDER_TYPE, INPUT_EVENT_TYPE } from 'cm-chessboard/src/cm-chessboard/Chessboard'
+import { Chessboard, FEN_START_POSITION, BORDER_TYPE, INPUT_EVENT_TYPE, SQUARE_SELECT_TYPE } from 'cm-chessboard/src/cm-chessboard/Chessboard'
 import 'cm-chessboard/styles/cm-chessboard.css'
 
 export default {
@@ -84,7 +84,12 @@ export default {
         captures: []
       },
       materialCount: 0,
-      windowWidth: window.innerWidth
+      windowWidth: window.innerWidth,
+      isControlKeyDown: false,
+      isAltKeyDown: false,
+      rcMarker: { class: 'emphasize', slice: 'markerSquare' },
+      altRcMarker: { class: 'emphasize2', slice: 'markerSquare' },
+      ctrlRcMarker: { class: 'emphasize3', slice: 'markerSquare' }
     }
   },
   computed: {
@@ -102,13 +107,53 @@ export default {
       sprite: { url: require('@/assets/images/svg/chessboard-sprite-staunty.svg'), cache: true }
     })
 
+    this.board.enableSquareSelect((event) => {
+      switch (event.type) {
+        // left click
+        case SQUARE_SELECT_TYPE.primary:
+          return this.board.removeMarkers()
+
+        // right click
+        case SQUARE_SELECT_TYPE.secondary: {
+          const hasMarkers = (this.board.getMarkers(event.square).length > 0)
+
+          if (this.isControlKeyDown) {
+            return hasMarkers
+              ? this.removeAllSquareMarkers(event.square)
+              : this.board.addMarker(event.square, this.ctrlRcMarker)
+          }
+
+          if (this.isAltKeyDown) {
+            return hasMarkers
+              ? this.removeAllSquareMarkers(event.square)
+              : this.board.addMarker(event.square, this.altRcMarker)
+          }
+
+          return hasMarkers
+            ? this.removeAllSquareMarkers(event.square)
+            : this.board.addMarker(event.square, this.rcMarker)
+        }
+      }
+    })
+
     this.changeTurn()
 
-    window.addEventListener('resize', (e) => {
-      this.windowWidth = window.innerWidth
-    })
+    // --------------------------------------------
+    // Event listeners
+    // --------------------------------------------
+    window.addEventListener('resize', this.resizeHandler)
+    window.addEventListener('keydown', this.keydownHandler)
+    window.addEventListener('keyup', this.keyupHandler)
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.resizeHandler)
+    window.removeEventListener('keydown', this.keydownHandler)
+    window.removeEventListener('keyup', this.keyupHandler)
   },
   methods: {
+    resizeHandler () {
+      this.windowWidth = window.innerWidth
+    },
     inputHandler (event) {
       if (this.disabled) { return false }
 
@@ -123,14 +168,6 @@ export default {
       if (event.type !== INPUT_EVENT_TYPE.moveDone) { return true }
       const result = this.playMove({ from: event.squareFrom, to: event.squareTo, promotion: 'q' })
       return result
-    },
-    drawPossibleMoves (square) {
-      const moves = this.game.moves({ square, verbose: true })
-      moves.forEach((move) => {
-        (move.captured)
-          ? this.board.addMarker(move.to, { class: 'legal-capture', slice: 'markerCircle' })
-          : this.board.addMarker(move.to, { class: 'legal-move', slice: 'markerSmallCircle' })
-      })
     },
     playMove (move) {
       const moveResult = this.game.move(move)
@@ -243,6 +280,36 @@ export default {
           ? Math.abs(this.materialCount)
           : 0
     },
+
+    // ----------------------------------------
+    // -- markers -----------------------------
+    // ----------------------------------------
+    keydownHandler (event) {
+      switch (event.keyCode) {
+        case 17: this.isControlKeyDown = true; break
+        case 18: this.isAltKeyDown = true; break
+      }
+    },
+    keyupHandler (event) {
+      switch (event.keyCode) {
+        case 17: this.isControlKeyDown = false; break
+        case 18: this.isAltKeyDown = false; break
+      }
+    },
+    drawPossibleMoves (square) {
+      const moves = this.game.moves({ square, verbose: true })
+      moves.forEach((move) => {
+        (move.captured)
+          ? this.board.addMarker(move.to, { class: 'legal-capture', slice: 'markerCircle' })
+          : this.board.addMarker(move.to, { class: 'legal-move', slice: 'markerSmallCircle' })
+      })
+    },
+    removeAllSquareMarkers (square) {
+      this.board.removeMarkers(square, this.rcMarker)
+      this.board.removeMarkers(square, this.ctrlRcMarker)
+      this.board.removeMarkers(square, this.altRcMarker)
+    },
+
     // ----------------------------------------
     // -- generic methods ---------------------
     // ----------------------------------------
@@ -334,5 +401,23 @@ export default {
   stroke: black;
   stroke-width: 3px;
   opacity: 0.1;
+}
+
+/* custom "right click" marker */
+.cm-chessboard .markers .marker.emphasize {
+  fill: #F87171;
+  opacity: 0.8;
+}
+
+/* custom "alt right click" marker */
+.cm-chessboard .markers .marker.emphasize2 {
+  fill: #60A5FA;
+  opacity: 0.8;
+}
+
+/* custom "ctrl right click" marker */
+.cm-chessboard .markers .marker.emphasize3 {
+  fill: #FBBF24;
+  opacity: 0.8;
 }
 </style>
