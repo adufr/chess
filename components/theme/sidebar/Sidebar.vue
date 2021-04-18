@@ -71,15 +71,30 @@
       <!----------------------------->
       <!-- bottom ------------------->
       <!----------------------------->
-      <div class="w-full">
-        <theme-switch />
+      <div class="w-full flex items-center justify-between p-5">
+        <div class="cursor-pointer" @click="$store.commit('layout/TOGGLE_SETTINGS_SLIDEOVER', true)">
+          <font-awesome-icon icon="cog" class="text-xl text-gray-500" />
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">
+            v{{ version }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import packageJson from '@/package.json'
+
 export default {
+  data () {
+    return {
+      version: packageJson.version
+    }
+  },
   methods: {
     toggleSidebar () {
       this.$store.commit('layout/TOGGLE_SIDEBAR')
