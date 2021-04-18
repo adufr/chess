@@ -81,7 +81,7 @@ export default {
   // Fontawesome icons configuration
   fontawesome: {
     icons: {
-      solid: ['faBars', 'faMoon', 'faHome', 'faUser', 'faUsers',
+      solid: ['faBars', 'faMoon', 'faHome', 'faUser', 'faUsers', 'faCog', 'faTimes',
         'faPuzzlePiece', 'faCheck', 'faChess', 'faChessBoard', 'faChessKing',
         'faChessQueen', 'faChessRook', 'faChessBishop', 'faChessKnight', 'faChessPawn'],
       brands: ['faGithub']
