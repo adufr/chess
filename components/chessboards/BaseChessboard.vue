@@ -111,7 +111,7 @@ export default {
       switch (event.type) {
         // left click
         case SQUARE_SELECT_TYPE.primary:
-          return this.board.removeMarkers()
+          return this.removeAllSquareMarkers()
 
         // right click
         case SQUARE_SELECT_TYPE.secondary: {
