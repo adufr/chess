@@ -1,6 +1,6 @@
 {
   "name": "@woosy/chess",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -13,7 +13,8 @@
     "chess.js": "^0.11.0",
     "cm-chessboard": "^3.10.3",
     "core-js": "^3.10.1",
-    "nuxt": "^2.15.4"
+    "nuxt": "^2.15.4",
+    "vue-plausible": "^1.1.4"
   },
   "devDependencies": {
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
