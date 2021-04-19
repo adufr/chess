@@ -29,7 +29,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/window-game-over.js' }
+    { src: '~/plugins/window-game-over.js' },
+    { src: '~/plugins/plausible.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -56,6 +57,7 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    'vue-plausible'
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -97,5 +99,13 @@ export default {
     illegal: { src: '/sounds/illegal.webm' },
     capture: { src: '/sounds/capture.webm' },
     gameEnd: { src: '/sounds/game-end.webm' }
+  },
+
+  // https://github.com/moritzsternemann/vue-plausible
+  plausible: {
+    apiHost: 'https://analytics.arthurdufour.com',
+    domain: 'chess.arthurdufour.com',
+    hashMode: false,
+    trackLocalhost: false
   }
 }
