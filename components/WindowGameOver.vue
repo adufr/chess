@@ -5,7 +5,6 @@
       id="windowGameOver"
       ref="windowGameOverRef"
       class="absolute bg-white rounded-md shadow-2xl"
-      @close="show = false"
     >
       <div
         class="p-5 text-center  rounded-t-md"
@@ -15,6 +14,11 @@
           'bg-gray-400': options.type === 'draw',
         }"
       >
+        <font-awesome-icon
+          icon="times"
+          class="absolute right-0 mr-5 text-white cursor-pointer"
+          @click="show = false"
+        />
         <p class="text-3xl font-extrabold text-white">
           {{ options.title }}
         </p>

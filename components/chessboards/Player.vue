@@ -1,5 +1,5 @@
 <template>
-  <div class="h-12 flex" :class="color === 'black' ? 'items-start' : 'items-end'">
+  <div class="h-12 flex" :class="player ? 'items-end' : 'items-start'">
     <div class="flex items-start space-x-2">
       <div class="w-10 h-10 rounded-md bg-nord-snow-2 dark:bg-nord-night-1 p-1">
         <img :src="require('@/assets/images/svg/' + imgPath)" alt="">
@@ -11,7 +11,7 @@
         </p>
         <div
           class="-mt-px"
-          :class="color === 'white'
+          :class="color === 'w'
             ? 'text-nord-night-4 dark:text-nord-night-0'
             : 'text-nord-snow-1 dark:text-white'"
         >
@@ -34,10 +34,14 @@
 <script>
 export default {
   props: {
+    player: {
+      type: Boolean,
+      default: false
+    },
     color: {
       type: String,
-      default: 'white',
-      validator: value => ['white', 'black'].includes(value)
+      default: 'w',
+      validator: value => ['w', 'b'].includes(value)
     },
     name: {
       type: String,

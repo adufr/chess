@@ -7,7 +7,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'chess-projects',
+    title: 'Chess | arthurdufour.com',
     htmlAttrs: {
       lang: 'en'
     },
@@ -81,8 +81,8 @@ export default {
   // Fontawesome icons configuration
   fontawesome: {
     icons: {
-      solid: ['faBars', 'faMoon', 'faHome', 'faUser', 'faUsers',
-        'faPuzzlePiece', 'faCheck', 'faChess', 'faChessBoard', 'faChessKing',
+      solid: ['faBars', 'faMoon', 'faHome', 'faUser', 'faUsers', 'faCog', 'faTimes',
+        'faRobot', 'faPuzzlePiece', 'faCheck', 'faChess', 'faChessBoard', 'faChessKing',
         'faChessQueen', 'faChessRook', 'faChessBishop', 'faChessKnight', 'faChessPawn'],
       brands: ['faGithub']
     }

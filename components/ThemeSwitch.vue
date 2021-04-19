@@ -1,6 +1,6 @@
 <template>
-  <div class="m-5 px-3 flex space-x-2 items-center justify-center">
-    <font-awesome-icon icon="moon" class="text-gray-600" />
+  <div>
+    <!-- <font-awesome-icon icon="moon" class="text-gray-600" /> -->
 
     <div class="relative inline-block w-10 text-center text-lg">
       <input
