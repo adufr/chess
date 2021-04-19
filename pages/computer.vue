@@ -1,9 +1,12 @@
 <template>
   <chessboard-computer
     :disabled="disabled"
-    :computer="selected"
-    :black-name="selectedComputer.displayName"
-    :white-name="'Player (you)'"
+    :computer="selectedComputerId"
+    :player-color="color"
+    :player-name="'Player (you)'"
+    :player-image="'white-pawn.svg'"
+    :opponent-name="selectedComputer.displayName"
+    :opponent-image="'computer.svg'"
   >
     <template #right>
       <div class="h-full bg-nord-snow-3 dark:bg-nord-night-1 rounded-md">
@@ -41,14 +44,56 @@
                 v-for="(computer, index) in computers"
                 :key="index"
                 class="flex items-center justify-center p-1 rounded-md border-4"
-                :class="(selected === computer.id) ? 'border-nord-frost-3' : 'border-nord-snow-3 dark:border-nord-night-1'"
-                @click="selected = computer.id"
+                :class="(selectedComputerId === computer.id)
+                  ? 'border-nord-frost-3'
+                  : 'border-nord-snow-3 dark:border-nord-night-1'"
+                @click="selectedComputerId = computer.id"
               >
                 <div class="h-14 w-14 xl:h-20 xl:w-20 flex items-center justify-center bg-white p-2 rounded-md">
                   <img src="@/assets/images/svg/computer.svg" alt="Computer icon">
                   <p class="absolute text-center font-black text-gray-500">
                     {{ computer.id }}
                   </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center space-y-3">
+              <p class="text-xs text-gray-400 font-semibold">
+                JE JOUE LES
+              </p>
+
+              <div class="w-full flex justify-center space-x-3">
+                <div
+                  class="h-12 w-12 flex items-center justify-center rounded-md border-2 cursor-pointer"
+                  :class="selectedColor === 'w'
+                    ? 'border-nord-frost-3'
+                    : 'border-nord-snow-1 dark:border-nord-night-3'"
+                  @click="selectedColor = 'w'"
+                >
+                  <font-awesome-icon icon="chess-pawn" class="text-2xl text-white" />
+                </div>
+
+                <div
+                  class="h-12 w-12 flex items-center justify-center rounded-md border-2 cursor-pointer"
+                  :class="selectedColor === 'r'
+                    ? 'border-nord-frost-3'
+                    : 'border-nord-snow-1 dark:border-nord-night-3'"
+                  @click="selectedColor = 'r'"
+                >
+                  <p class="text-lg text-gray-400">
+                    ?
+                  </p>
+                </div>
+
+                <div
+                  class="h-12 w-12 flex items-center justify-center rounded-md border-2 cursor-pointer"
+                  :class="selectedColor === 'b'
+                    ? 'border-nord-frost-3'
+                    : 'border-nord-snow-1 dark:border-nord-night-2'"
+                  @click="selectedColor = 'b'"
+                >
+                  <font-awesome-icon icon="chess-pawn" class="text-2xl text-black" />
                 </div>
               </div>
             </div>
@@ -73,7 +118,9 @@ export default {
   data () {
     return {
       disabled: true,
-      selected: 1,
+      selectedComputerId: 1,
+      selectedColor: 'w',
+      color: null,
       computers: [
         {
           id: 1,
@@ -92,12 +139,16 @@ export default {
   },
   computed: {
     selectedComputer () {
-      return this.computers[this.selected - 1]
+      return this.computers[this.selectedComputerId - 1]
     }
   },
   methods: {
     start () {
-      if (!this.selected) { return }
+      if (!this.selectedComputerId || !this.selectedColor) { return }
+
+      (this.selectedColor === 'r')
+        ? this.color = Math.round(Math.random()) === 1 ? 'w' : 'b'
+        : this.color = this.selectedColor
 
       this.disabled = false
     }

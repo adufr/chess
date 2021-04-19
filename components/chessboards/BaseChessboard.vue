@@ -11,23 +11,25 @@
         : 'width: calc(100vh - 96px)'"
     >
       <player
-        color="black"
-        :name="blackName"
-        img-path="computer.svg"
-        :captures="black.captures"
-        :advantage="getMaterialDifference('black')"
+        :color="opponentColor"
+        :name="opponentName"
+        :img-path="opponentImage"
+        :captures="opponent.captures"
+        :advantage="getMaterialDifference(opponentColor)"
       />
 
       <div :id="`chessboard-${uid}`" class="flex items-center justify-center">
         <window-game-over />
       </div>
 
+      <!-- TODO: fix img -->
       <player
-        color="white"
-        :name="whiteName"
-        img-path="white-pawn.svg"
-        :captures="white.captures"
-        :advantage="getMaterialDifference('white')"
+        player
+        :color="playerColor"
+        :name="playerName"
+        :img-path="playerImage"
+        :captures="player.captures"
+        :advantage="getMaterialDifference(playerColor)"
       />
     </div>
 
@@ -59,13 +61,25 @@ export default {
       type: String,
       default: FEN_START_POSITION
     },
-    whiteName: {
+    playerName: {
       type: String,
       default: ''
     },
-    blackName: {
+    playerImage: {
+      type: String,
+      default: 'white-pawn.svg'
+    },
+    opponentName: {
       type: String,
       default: ''
+    },
+    opponentImage: {
+      type: String,
+      default: 'computer.svg'
+    },
+    playerColor: {
+      type: String,
+      default: 'w'
     }
   },
   data () {
@@ -73,12 +87,8 @@ export default {
       uid: Date.now(),
       game: null,
       board: null,
-      white: {
-        captures: []
-      },
-      black: {
-        captures: []
-      },
+      player: { captures: [] },
+      opponent: { captures: [] },
       materialCount: 0,
       windowWidth: window.innerWidth,
       isControlKeyDown: false,
@@ -92,6 +102,18 @@ export default {
   computed: {
     isSmall () {
       return this.windowWidth <= 1026
+    },
+    opponentColor () {
+      return (this.playerColor === 'w') ? 'b' : 'w'
+    }
+  },
+  watch: {
+    playerColor (newVal) {
+      this.board.setOrientation(newVal)
+    },
+    disabled (newVal) {
+      // update turn on game start
+      if (newVal === false) { this.afterMove() }
     }
   },
   mounted () {
@@ -190,8 +212,8 @@ export default {
     // -- captures logic ----------------------
     // ----------------------------------------
     updateCaptures () {
-      this.white.captures = this.getWhiteCaptures()
-      this.black.captures = this.getBlackCaptures()
+      this.player.captures = this.playerColor === 'w' ? this.getWhiteCaptures() : this.getBlackCaptures()
+      this.opponent.captures = this.opponentColor === 'w' ? this.getWhiteCaptures() : this.getBlackCaptures()
       this.materialCount = this.getMaterialCount()
     },
     getBlackCaptures () {
@@ -237,32 +259,34 @@ export default {
       return array
     },
     getMaterialCount () {
-      let whiteTotal = 0
-      let blackTotal = 0
-      this.white.captures.forEach((capture) => {
+      let playerTotal = 0
+      let opponentTotal = 0
+      this.player.captures.forEach((capture) => {
         switch (capture) {
-          case 'pawn': whiteTotal += 1; break
-          case 'knight': whiteTotal += 3; break
-          case 'bishop': whiteTotal += 3; break
-          case 'rook': whiteTotal += 5; break
-          case 'queen': whiteTotal += 9; break
+          case 'pawn': playerTotal += 1; break
+          case 'knight': playerTotal += 3; break
+          case 'bishop': playerTotal += 3; break
+          case 'rook': playerTotal += 5; break
+          case 'queen': playerTotal += 9; break
         }
       })
 
-      this.black.captures.forEach((capture) => {
+      this.opponent.captures.forEach((capture) => {
         switch (capture) {
-          case 'pawn': blackTotal += 1; break
-          case 'knight': blackTotal += 3; break
-          case 'bishop': blackTotal += 3; break
-          case 'rook': blackTotal += 5; break
-          case 'queen': blackTotal += 9; break
+          case 'pawn': opponentTotal += 1; break
+          case 'knight': opponentTotal += 3; break
+          case 'bishop': opponentTotal += 3; break
+          case 'rook': opponentTotal += 5; break
+          case 'queen': opponentTotal += 9; break
         }
       })
 
-      return whiteTotal - blackTotal
+      return (this.playerColor === 'w')
+        ? playerTotal - opponentTotal
+        : opponentTotal - playerTotal
     },
     getMaterialDifference (color) {
-      return (color === 'white')
+      return (color === 'w')
         ? this.materialCount > 0
           ? Math.abs(this.materialCount)
           : 0
@@ -320,8 +344,8 @@ export default {
         let title, subtitle, type
 
         if (this.game.in_checkmate()) {
-          type = turn === 'b' ? 'victory' : 'defeat'
-          title = turn === 'b' ? 'You won!' : 'You lost!'
+          type = (turn === this.playerColor) ? 'defeat' : 'victory'
+          title = (turn === this.playerColor) ? 'You lost!' : 'You won!'
           subtitle = 'by checkmate'
         } else if (this.game.in_stalemate()) {
           type = 'draw'

@@ -14,7 +14,9 @@ export default {
   },
   methods: {
     afterMove () {
-      if (this.game.turn() === 'b') {
+      // if it's bot's turn to play
+      const computerColor = this.playerColor === 'w' ? 'b' : 'w'
+      if (this.game.turn() === computerColor) {
         this.board.disableMoveInput()
 
         // ------------------------------------
