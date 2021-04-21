@@ -38,7 +38,7 @@ export default {
         // play using minimax
         // ------------------------------------
         } else {
-          const move = this.minimax(this.game, 2, true, 0, 'b')[0]
+          const move = this.minimax(this.game, 2, true, 0, computerColor)[0]
 
           setTimeout(() => {
             this.playMove(move)
