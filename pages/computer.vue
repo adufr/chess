@@ -131,8 +131,8 @@ export default {
         {
           id: 2,
           name: 'Computer #2',
-          displayName: 'Computer #1 (minimax, depth=2)',
-          description: 'This computer plays using a minimax algorithm (depth 2).'
+          displayName: 'Computer #1 (minimax, depth=3)',
+          description: 'This computer plays using a minimax algorithm (depth 3).'
         }
       ]
     }
