@@ -1,6 +1,6 @@
 {
   "name": "@woosy/chess",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "scripts": {
     "dev": "nuxt",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "chess.js": "^0.11.0",
-    "cm-chessboard": "^3.10.3",
-    "core-js": "^3.10.1",
+    "cm-chessboard": "^3.10.6",
+    "core-js": "^3.11.0",
     "nuxt": "^2.15.4",
     "vue-plausible": "^1.1.4"
   },
@@ -26,10 +26,10 @@
     "@nuxtjs/tailwindcss": "^4.0.3",
     "@teamnovu/nuxt-breaky": "^1.2.2",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.23.0",
+    "eslint": "^7.24.0",
     "eslint-plugin-nuxt": "^2.0.0",
-    "eslint-plugin-vue": "^7.8.0",
+    "eslint-plugin-vue": "^7.9.0",
     "nuxt-use-sound": "^1.0.8",
-    "postcss": "^8.2.9"
+    "postcss": "^8.2.12"
   }
 }

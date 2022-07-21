@@ -153,7 +153,7 @@ export default {
       }
       return prevSum
     },
-    minimax (game, depth, isMaximizingPlayer, sum, color) {
+    minimax (game, depth, alpha, beta, isMaximizingPlayer, sum, color) {
       const children = game.moves({ verbose: true })
 
       // Sort moves randomly, so the same move isn't always picked on ties
@@ -177,7 +177,7 @@ export default {
         const currPrettyMove = game.move(currMove)
         const newSum = this.evaluateBoard(currPrettyMove, sum, color)
         // eslint-disable-next-line no-unused-vars
-        const [_, childValue] = this.minimax(game, depth - 1, !isMaximizingPlayer, newSum, color)
+        const [_, childValue] = this.minimax(game, depth - 1, alpha, beta, !isMaximizingPlayer, newSum, color)
 
         game.undo()
 
@@ -186,9 +186,22 @@ export default {
             maxValue = childValue
             bestMove = currPrettyMove
           }
-        } else if (childValue < minValue) {
-          minValue = childValue
-          bestMove = currPrettyMove
+          if (childValue > alpha) {
+            alpha = childValue
+          }
+        } else {
+          if (childValue < minValue) {
+            minValue = childValue
+            bestMove = currPrettyMove
+          }
+          if (childValue < beta) {
+            beta = childValue
+          }
+        }
+
+        // Alpha-beta pruning
+        if (alpha >= beta) {
+          break
         }
       }
 
